@@ -40,9 +40,17 @@ class Self_Attention(nn.Module):
         # proj_value.shape = torch.Size([8, 64, 1024])
         proj_value = self.value_conv(x).view(m_batchsize,-1, width*height) # B * C * N
 
+
+
+        # out_bmm.shape = torch.Size([8, 64, 1024])
         out = torch.bmm(proj_value,attention.permute(0,2,1) ) # B*C*N
+        # out_view.shape = torch.Size([8, 64, 32, 32])
         out = out.view(m_batchsize,C,width,height) # B*C*H*W
 
+
+        # self.gamma.shape = torch.Size([1])，self.gamma为可训练参数，虽然数值全零，但在训练过程中会逐渐被赋值
+        # self.gamma*out = torch.Size([8, 64, 32, 32])
+        # out.shape = torch.Size([8, 64, 32, 32])
         out = self.gamma*out + x
         return out,attention
 
