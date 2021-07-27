@@ -5,8 +5,10 @@ import torch.nn as nn
 import os
 import torch.nn.functional as F
 
+# 代码的注释是在input.shape = (8,64,32,32)的基础上进行注释的
+
 class Self_Attention(nn.Module):
-    """ Self attention Layer"""
+    # in_dim为输入、输出特征的通道维度数
     def __init__(self,in_dim,activation):
         super(Self_Attention,self).__init__()
         self.chanel_in = in_dim
@@ -27,10 +29,15 @@ class Self_Attention(nn.Module):
                 attention: B * N * N (N is Width*Height)
         """
         m_batchsize,C,width ,height = x.size()
+        # proj_query.shape = torch.Size([8, 1024, 8])
         proj_query  = self.query_conv(x).view(m_batchsize,-1,width*height).permute(0,2,1) # B*N*C
+        # proj_key.shape = torch.Size([8, 8, 1024])
         proj_key =  self.key_conv(x).view(m_batchsize,-1,width*height) # B*C*N
+        # energy.shape = torch.Size([8, 1024, 1024])
         energy =  torch.bmm(proj_query,proj_key) # batch的matmul B*N*N
+        # attention.shape = torch.Size([8, 1024, 1024])
         attention = self.softmax(energy) # B * (N) * (N)
+        # proj_value.shape = torch.Size([8, 64, 1024])
         proj_value = self.value_conv(x).view(m_batchsize,-1, width*height) # B * C * N
 
         out = torch.bmm(proj_value,attention.permute(0,2,1) ) # B*C*N
@@ -41,9 +48,9 @@ class Self_Attention(nn.Module):
 
 
 if __name__ == "__main__":
-    self_attention = Self_Attention(3,None)
+    self_attention = Self_Attention(64,None)
     self_attention.cuda()
     # bs,channels,height,width
-    x = Variable(torch.rand([8, 3, 32, 32]).cuda())
+    x = Variable(torch.rand([8, 64, 32, 32]).cuda())
     y = self_attention(x)
 
