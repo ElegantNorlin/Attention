@@ -36,6 +36,7 @@ class Self_Attention(nn.Module):
         # energy.shape = torch.Size([8, 1024, 1024])
         energy =  torch.bmm(proj_query,proj_key) # batch的matmul B*N*N
         # attention.shape = torch.Size([8, 1024, 1024])
+        # 过softmax之后会得到每一行像素的权重分配（每一行的权重之和为1）
         attention = self.softmax(energy) # B * (N) * (N)
         # proj_value.shape = torch.Size([8, 64, 1024])
         proj_value = self.value_conv(x).view(m_batchsize,-1, width*height) # B * C * N
