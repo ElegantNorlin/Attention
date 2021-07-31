@@ -4,7 +4,7 @@ from torch import nn
 from torch.nn import init
 
 
-
+# 这里也是借鉴了SE通道注意力机制
 class ChannelAttention(nn.Module):
     def __init__(self,channel,reduction=16):
         super().__init__()
@@ -18,7 +18,9 @@ class ChannelAttention(nn.Module):
         self.sigmoid=nn.Sigmoid()
     
     def forward(self, x) :
+    	# 这里定义的最大池化函数结果就是每一个通道的feature map只剩下一个像素（也就是该通道像素的最大值）
         max_result=self.maxpool(x)
+        # 和最大值池化类似，这里剩下的一个像素是该通道像素的平均值
         avg_result=self.avgpool(x)
         max_out=self.se(max_result)
         avg_out=self.se(avg_result)
