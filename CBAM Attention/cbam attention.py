@@ -41,6 +41,18 @@ class SpatialAttention(nn.Module):
         output=self.sigmoid(output)
         return output
 
+class SpatialAttention(nn.Module):
+    def __init__(self, kernel_size=7):
+        super(SpatialAttention, self).__init__()
+        self.conv1 = nn.Conv2d(2, 1, kernel_size, padding=kernel_size//2, bias=False)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        avg_out = torch.mean(x, dim=1, keepdim=True)
+        max_out, _ = torch.max(x, dim=1, keepdim=True)
+        x = torch.cat([avg_out, max_out], dim=1)
+        x = self.conv1(x)
+        return self.sigmoid(x)
 
 
 class CBAMBlock(nn.Module):
@@ -48,7 +60,7 @@ class CBAMBlock(nn.Module):
     def __init__(self, channel=512,reduction=16,kernel_size=49):
         super().__init__()
         self.ca=ChannelAttention(channel=channel,reduction=reduction)
-        self.sa=SpatialAttention(kernel_size=kernel_size)
+        self.sa=SpatialAttention()
 
 
     def init_weights(self):
@@ -75,7 +87,6 @@ class CBAMBlock(nn.Module):
 
 if __name__ == '__main__':
     input=torch.randn(50,512,7,7)
-    kernel_size=input.shape[2]
-    cbam = CBAMBlock(channel=512,reduction=16,kernel_size=kernel_size)
+    cbam = CBAMBlock(channel=512,reduction=16)
     output=cbam(input)
     print(output.shape)
