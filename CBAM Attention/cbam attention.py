@@ -4,7 +4,7 @@ from torch import nn
 from torch.nn import init
 
 
-# 这里也是借鉴了SE通道注意力机制
+# 这里类似于SE通道注意力机制
 class ChannelAttention(nn.Module):
     def __init__(self,channel,reduction=16):
         super().__init__()
