@@ -27,6 +27,7 @@ class ChannelAttention(nn.Module):
         output=self.sigmoid(max_out+avg_out)
         return output
 
+# 个人理解的空间注意力机制是对每个点像素的注意力权重分配
 class SpatialAttention(nn.Module):
     def __init__(self,kernel_size=7):
         super().__init__()
