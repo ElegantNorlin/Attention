@@ -36,6 +36,7 @@ class Self_Attention(nn.Module):
         """
         m_batchsize,C,width ,height = x.size()
         # self.query_conv(x).shape = torch.Size([8, 8, 32, 32])
+        # self.query_conv(x).view(m_batchsize,-1,width*height).shape = torch.Size([8, 8, 1024])
         # proj_query.shape = torch.Size([8, 1024, 8])  
         proj_query  = self.query_conv(x).view(m_batchsize,-1,width*height).permute(0,2,1) # B*N*C
         # self.key_conv(x).shape = torch.Size([8, 8, 32, 32])
@@ -52,6 +53,7 @@ class Self_Attention(nn.Module):
 
 
 
+        # attention.permute(0,2,1).shape = torch.Size([8, 1024, 1024])
         # out_bmm.shape = torch.Size([8, 64, 1024])
         out = torch.bmm(proj_value,attention.permute(0,2,1) ) # B*C*N
         # out_view.shape = torch.Size([8, 64, 32, 32])
