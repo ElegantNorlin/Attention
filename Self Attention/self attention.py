@@ -8,7 +8,7 @@ import torch.nn.functional as F
 '''
 # 代码的注释是在input.shape = (8,64,32,32)的基础上进行注释的
 query.view就是把长、宽像素拉直成一个维度，维度的维度值为原来的w * h
-key.view就是把长、宽像素拉直成一个维度，维度的维度值为原来的w * h  
+key.view就是把长、宽像素拉直成一个维度，维度的维度值为原来的w * h
 query和key正好是可以点乘的矩阵
 经过softmax会给每一个像素分配一个权重值，每一行的权重之和为1
 '''
@@ -35,17 +35,18 @@ class Self_Attention(nn.Module):
                 attention: B * N * N (N is Width*Height)
         """
         m_batchsize,C,width ,height = x.size()
-        # proj_query.view.shape = torch.Size([8, 1024, 8])
-        # self.query_conv(x).shape = torch.Size([8, 32, 32, 32])
+        # self.query_conv(x).shape = torch.Size([8, 8, 32, 32])
+        # proj_query.shape = torch.Size([8, 1024, 8])  
         proj_query  = self.query_conv(x).view(m_batchsize,-1,width*height).permute(0,2,1) # B*N*C
-        # proj_key.view.shape = torch.Size([8, 8, 1024])
-        # self.key_conv(x).shape = torch.Size([8, 32, 32, 32])
+        # self.key_conv(x).shape = torch.Size([8, 8, 32, 32])
+        # proj_key.shape = torch.Size([8, 8, 1024])
         proj_key =  self.key_conv(x).view(m_batchsize,-1,width*height) # B*C*N
         # energy.shape = torch.Size([8, 1024, 1024])
         energy =  torch.bmm(proj_query,proj_key) # batch的matmul B*N*N
         # attention.shape = torch.Size([8, 1024, 1024])
         # 过softmax之后会得到每一行像素的权重分配（每一行的权重之和为1）
         attention = self.softmax(energy) # B * (N) * (N)
+        # self.value_conv(x).shape = torch.Size([8, 64, 32, 32])
         # proj_value.shape = torch.Size([8, 64, 1024])
         proj_value = self.value_conv(x).view(m_batchsize,-1, width*height) # B * C * N
 
