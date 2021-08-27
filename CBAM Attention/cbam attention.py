@@ -28,6 +28,12 @@ class ChannelAttention(nn.Module):
         return output
 
 # 个人理解的空间注意力机制是对每个点像素的注意力权重分配
+'''
+在空间注意力机制中，先是在第二维度上做了最大池化和平均池化得到的其实就是最有代表性的
+两种特征，他们的维度为(bs,1,h,w),然后将这两个tensor在dim=1第二维度相加。得到2通道的tensor
+然后再做一次卷积，把通道数调整为1，也就是将两个tensor提取到的信息压缩到一起
+然后我们得到一个单通道的tensor，然后过sigmoid激活函数，得到每一个像素点的权重。
+'''
 class SpatialAttention(nn.Module):
     def __init__(self,kernel_size=7):
         super().__init__()
