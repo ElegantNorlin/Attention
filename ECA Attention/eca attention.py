@@ -31,6 +31,7 @@ class ECAAttention(nn.Module):
     def forward(self, x):
         y=self.gap(x) #bs,c,1,1
         y=y.squeeze(-1).permute(0,2,1) #bs,1,c
+        # 这里的卷积是进一步整合通道的信息
         y=self.conv(y) #bs,1,c
         # sigmoid实际上就是对每一个通道分配了一个权重值，打印出数据可以很直观的看到
         y=self.sigmoid(y) #bs,1,c
